@@ -296,3 +296,9 @@ void * memcpy(void * dest, const void * src, size_t len) {
 char * strcpy(char * dest, const char * src) {
 	return memcpy(dest, src, strlen (src) + 1);
 }
+void pic_send_eoi(uint8_t irq) {
+	if(irq >= IRQ8) {
+		outb(0xA0, 0x20);
+	}
+	outb(0x20, 0x20);
+}

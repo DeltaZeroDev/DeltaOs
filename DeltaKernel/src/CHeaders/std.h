@@ -107,6 +107,7 @@ typedef struct gdt_entry gdt_entry_t;
 typedef struct gdt_ptr gdt_ptr_t;
 typedef struct tss_entry_struct tss_entry_t;
 void register_interrupt_handler(uint8_t n, isr_t handler);
+void pic_send_eoi(uint8_t irq);
 
 extern void isr0();
 extern void isr1();

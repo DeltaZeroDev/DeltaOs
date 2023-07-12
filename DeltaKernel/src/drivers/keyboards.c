@@ -1,8 +1,8 @@
 #include "/mnt/c/TheBoilerPlateFactory/DeltaKernel/src/drivers/layouts.h"
 #include "/mnt/c/TheBoilerPlateFactory/DeltaKernel/src/CHeaders/std.h"
 
-char * pressed_keys[1000] = {};
-uint32_t index = 0;
+char * pressed_keys[5000] = {};
+uint32_t idx = 0;
 int layer = 0;
 int caps = 0;
 int printing = 0;
@@ -11,12 +11,14 @@ int reading = 0;
 
 #define layout qwerty_en_us
 
+// queue_push and queue_read are defined in the keyboard driver
+// but are not exclusively used for the keyboard (see mouse driver)
+
 void queue_push(char * key) {
 	if (full == 0) {
-		//pressed_keys[index] = key;
-		pressed_keys[index] = key;
-		index++;
-		if (index == 1000) {
+		pressed_keys[idx] = key;
+		idx++;
+		if (idx == 5000) {
 			full = 1;
 		}
 	}
@@ -27,16 +29,16 @@ void queue_read(char * x) {
 	strcpy(x, pressed_keys[0]);
 	x[strlen(pressed_keys[0])] = '\0';
 	if (pressed_keys[0][0] != '\1') {
-		for (i=0; i < 999; i++) {
+		for (i=0; i < 4999; i++) {
 			pressed_keys[i] = pressed_keys[i+1];
 		}
-		index--;
+		idx--;
 	}
 	reading = 0;
 }
 void queue_pop() {
-	index--;
-	pressed_keys[index] = "\1";
+	idx--;
+	pressed_keys[idx] = "\1";
 }
 void ps2_callback(registers_t regs) {
 	uint32_t keycode = inb(0x60);
@@ -61,9 +63,10 @@ void ps2_callback(registers_t regs) {
 					terminal_cprintf(" ",0);
 					terminal_move_cursor(cursorx - 1, cursory);
 				}
-				queue_pop();
+				//queue_pop();
+				queue_push(key);
 			} else {
-				queue_push(layout[keycode][layer]);
+				queue_push(key);
 			}
 		}
 	} else {
@@ -75,10 +78,12 @@ void ps2_callback(registers_t regs) {
 				layer = 0;
 		}
 	}
+	pic_send_eoi(IRQ1);
 }
-void ps2_init() {
+void ps2_kbd_init() {
 	register_interrupt_handler(IRQ1, &ps2_callback);
-	for (int i=0; i < 999; i++) {
+	register_interrupt_handler(1, &ps2_callback);
+	for (int i=0; i < 4999; i++) {
 		pressed_keys[i] = "\1";
 	}
 }

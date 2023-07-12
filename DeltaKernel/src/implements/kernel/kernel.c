@@ -24,8 +24,8 @@ int kernel_main() {
 	disable_interrupts();
 	init_interrupts();
 	init_timer(50);
-	ps2_init();
-	disable_printing();
+	ps2_kbd_init();
+	enable_printing();
 	terminal_clear_screen();
 	terminal_move_cursor(0,0);
 	terminal_cprintf("Welcome to DeltaOs\n", 1);

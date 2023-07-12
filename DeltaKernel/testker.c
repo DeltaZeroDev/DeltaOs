@@ -7,7 +7,6 @@ extern void test_interrupts(void);
 
 char osname[16] = "DeltaOs";
 char username[16] = "DeltaZero";
-char prompt[128] = "[DeltaZero@DeltaOs] # ";
 
 int kernel_main() {
 	char key[124];
@@ -30,7 +29,10 @@ int kernel_main() {
 	init_interrupts();
 	init_timer(50);
 	ps2_init();
-	disable_printing();
+	terminal_clear_screen();
+	terminal_move_cursor(0,0);
+	terminal_cprintf("Welcome to DeltaOs\n", 1);
+	shellstart();
 	//for (i = 1; i < 256; i++) {
 	//	test_string[i-1] = (char) i;
 	//}
@@ -46,14 +48,16 @@ int kernel_main() {
                     if (b == 1){
                         b--;
                     }  
-                // I literally have no clue why i did this, coded at 3:59 AM
+                // What
 				}              
                 if (g == 0){
                     if (strcmp(key, " ") == 0){
                         char cmd[16] = typed;
                         g++;
                         typed = "";
-                        b--;
+						if (cmd != "echo "){
+							b--;
+						}
                     }
                 }
                 if (b == 0){
@@ -68,6 +72,7 @@ int kernel_main() {
 				if (strcmp(key, "ENTER") == 0) {
                     char inp2[16] = typed;
 					typed[i] = '\0';
+
 					if (strcmp (fn, "function1") == 0) function1();
 					for (int j = 0; j < 1023; j++) {
 						typed[j] = '\0';

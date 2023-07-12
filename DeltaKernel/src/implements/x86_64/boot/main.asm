@@ -1,9 +1,23 @@
 bits	32
-section	.text
-	align	4
-	dd	0x1BADB002
-	dd	0x00
-	dd	- (0x1BADB002+0x00)
+section	.multiboot
+    MULTIBOOT_PAGE_ALIGN	equ 1<<0
+    MULTIBOOT_MEMORY_INFO	equ 1<<1
+    MULTIBOOT_USE_GFX		equ 0<<2
+    MULTIBOOT_HEADER_FLAGS	equ MULTIBOOT_PAGE_ALIGN | MULTIBOOT_MEMORY_INFO | MULTIBOOT_USE_GFX
+    MULTIBOOT_HEADER_MAGIC	equ 0x1BADB002
+    MULTIBOOT_CHECKSUM		equ -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
+	dd	MULTIBOOT_HEADER_MAGIC
+	dd	MULTIBOOT_HEADER_FLAGS
+	dd	MULTIBOOT_CHECKSUM
+    dd 0
+    dd 0
+    dd 0
+    dd 0
+    dd 0
+    dd 0
+    dd 640
+    dd 480
+    dd 16
 
 [EXTERN isr_handler]
 [EXTERN irq_handler]

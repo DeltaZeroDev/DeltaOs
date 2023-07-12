@@ -5,5 +5,5 @@ void shellstart(){
     terminal_cprintf(prompt, 5);
 }
 void ver(){
-    terminal_printf("DeltaKernel V=0.1\n");
+    terminal_printf("DeltaKernel V=0.1.2\n");
 }
