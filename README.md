@@ -1,2 +1,2 @@
-# DeltaKernel
-An OS Kernel I made
+# DeltaOS
+An Operating System I made
