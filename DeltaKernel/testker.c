@@ -44,6 +44,7 @@ int kernel_main() {
 			if (key[1] == '\0') {
 				if (key[0] != '\1') {
 					typed[i] = key[0];
+					terminal_printf(key);
 					i++;
                     if (b == 1){
                         b--;
@@ -74,15 +75,27 @@ int kernel_main() {
 					typed[i] = '\0';
 
 					if (strcmp (fn, "function1") == 0) function1();
-					for (int j = 0; j < 1023; j++) {
+					for (int j = 0; j < 1024; j++) {
 						typed[j] = '\0';
 					}
 					i = 0;
 				}
+				else if (strcmp(key, "BACKSPACE") == 0) {
+				if (typed[0] != '\0') {
+					if (cursorx - 1 > 0) {
+						terminal_move_cursor(cursorx - 1,cursory);
+						video_mem[cursor * 2] = '\0';
+						video_mem[cursor * 2 + 1] = '\0';
+						i--;
+						typed[i] = '\0';
+					}
+				}
+
 			}
 			//key[0] = '\1';
 			//key[1] = '\1';
 			//key[2] = '\0';
 		}
 	};
+	}
 }

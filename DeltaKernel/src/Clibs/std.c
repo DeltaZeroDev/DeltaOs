@@ -91,44 +91,57 @@ uint8_t getch() {
 }
 
 int terminal_printf(char * text) {
-	unsigned long int pos = cursor * 2;
-	unsigned long int i = 0;
-	while (text[i] != '\0') {
-		if (text[i] != '\n') {
-			video_mem[pos] = text[i];
-			video_mem[pos+1] = 15;
-			pos += 2;
-		} else {
-			terminal_move_cursor(0,cursory + 1);
-			pos = cursor * 2;
-		}
-		if (pos / 2 > (VGA_WIDTH + VGA_WIDTH - 1) * VGA_HEIGHT) {
-			scroll();
-		}
-		i++;
-	}
-	cursor = pos / 2;
-	terminal_move_cursor(cursor,0);
+    unsigned long int pos = cursor * 2;
+    unsigned long int i = 0;
+    while (text[i] != '\0') {
+        if ((pos / 2) / VGA_WIDTH > VGA_HEIGHT - 1) {
+            scroll();
+            pos = cursor * 2;
+        }
+        if (text[i] != '\n' && pos + 2 != (VGA_WIDTH * 2) - 2) {
+            video_mem[pos] = text[i];
+            video_mem[pos+1] = 15;
+            pos += 2;
+        } else {
+            if (text[i] != '\n') {
+                video_mem[pos] = text[i];
+                video_mem[pos+1] = 15;
+                pos += 2;
+            }
+            terminal_move_cursor(0,cursory + 1);
+            pos = cursor * 2;
+        }
+        i++;
+    }
+    cursor = pos / 2;
+    terminal_move_cursor(cursor % VGA_WIDTH, cursor / VGA_WIDTH);
 }
 int terminal_cprintf(char * text, int color) {
-	unsigned long int pos = cursor * 2;
-	unsigned long int i = 0;
-	while (text[i] != '\0') {
-		if (text[i] != '\n') {
-			video_mem[pos] = text[i];
-			video_mem[pos+1] = color;
-			pos += 2;
-		} else {
-			terminal_move_cursor(0,cursory + 1);
-			pos = cursor * 2;
-		}
-		if (pos / 2 > (VGA_WIDTH + VGA_WIDTH - 1) * VGA_HEIGHT) {
-			scroll();
-		}
-		i++;
-	}
-	cursor = pos / 2;
-	terminal_move_cursor(cursor,0);
+    unsigned long int pos = cursor * 2;
+    unsigned long int i = 0;
+    while (text[i] != '\0') {
+        if ((pos / 2) / VGA_WIDTH > VGA_HEIGHT - 1) {
+            scroll();
+            pos = cursor * 2;
+        }
+        if (text[i] != '\n' && pos + 2 != (VGA_WIDTH * 2) - 2) {
+            video_mem[pos] = text[i];
+            video_mem[pos+1] = 0;
+            video_mem[pos+1] = color;
+            pos += 2;
+        } else {
+            if (text[i] != '\n') {
+                video_mem[pos] = text[i];
+                video_mem[pos+1] = 15;
+                pos += 2;
+            }
+            terminal_move_cursor(0,cursory + 1);
+            pos = cursor * 2;
+        }
+        i++;
+    }
+    cursor = pos / 2;
+    terminal_move_cursor(cursor % VGA_WIDTH, cursor / VGA_WIDTH);
 }
 void sleep(unsigned long second) {
 	unsigned int seconds = ticks + (second * 100);
@@ -294,7 +307,7 @@ void * memcpy(void * dest, const void * src, size_t len) {
 	return dest;
 }
 char * strcpy(char * dest, const char * src) {
-	return memcpy(dest, src, strlen (src) + 1);
+    return memcpy(dest, src, strlen (src) + 1);
 }
 void pic_send_eoi(uint8_t irq) {
 	if(irq >= IRQ8) {
