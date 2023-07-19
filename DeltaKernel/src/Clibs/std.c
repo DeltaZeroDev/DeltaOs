@@ -4,7 +4,7 @@
 #include "/mnt/c/TheBoilerPlateFactory/DeltaKernel/src/drivers/keyboards.c"
 #include "/mnt/c/TheBoilerPlateFactory/DeltaKernel/src/CHeaders/print.h"
 
-#define VGA_HEIGHT 40
+#define VGA_HEIGHT 25
 #define VGA_WIDTH 80
 
 char * video_mem = (char*) 0xb8000;
@@ -286,14 +286,16 @@ void enable_interrupts() {
 	asm volatile ("sti\n");
 }
 void scroll() {
-	int i;
-	for (i = 0; i < (VGA_WIDTH + VGA_WIDTH) * VGA_HEIGHT; i++) {
-		video_mem[i] = video_mem[i + VGA_WIDTH + VGA_WIDTH];
-	}
-	for (i = (VGA_WIDTH + VGA_WIDTH - 1) * VGA_HEIGHT; i < (VGA_WIDTH + VGA_WIDTH) * VGA_HEIGHT; i++) {
-		video_mem[i] = 0;
-	}
-	terminal_move_cursor(cursorx,cursory-1);
+    int i;
+    for (i = 0; i < (VGA_WIDTH + VGA_WIDTH) * VGA_HEIGHT; i++) {
+        if (i != (VGA_WIDTH * 2) - 2 && i != (VGA_WIDTH * 2) - 1) {
+            video_mem[i] = video_mem[i + VGA_WIDTH + VGA_WIDTH];
+        }
+    }
+    for (i = (VGA_WIDTH + VGA_WIDTH) * (VGA_HEIGHT - 1); i < (VGA_WIDTH + VGA_WIDTH) * VGA_HEIGHT; i++) {
+        video_mem[i] = 0;
+    }
+    terminal_move_cursor(cursorx,cursory-1);
 }
 int abs(int i) {
 	return i < 0 ? -i : i;
@@ -315,3 +317,4 @@ void pic_send_eoi(uint8_t irq) {
 	}
 	outb(0x20, 0x20);
 }
+

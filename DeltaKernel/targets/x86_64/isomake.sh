@@ -7,4 +7,4 @@ ld -m elf_i386 -T targets/x86_64/linker.ld -o build/kernel.bin build/boot.o buil
 cp build/kernel.bin targets/x86_64/iso/boot/kernel.bin
 cd targets/x86_64
 grub-mkrescue -o DeltaOs.iso iso/
-qemu-system-i386 -vga std -cdrom DeltaOs.isos
+# qemu-system-i386 -vga std -cdrom DeltaOs.iso

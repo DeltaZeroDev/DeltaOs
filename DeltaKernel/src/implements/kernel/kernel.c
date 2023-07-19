@@ -15,6 +15,8 @@ int kernel_main() {
 	size_t i = 0;
     int g = 0;  
     int b = 2;
+	int q = 0;
+	int totkey = 0;
 	char cmd[1024] = "";
 	char inp1[1024] = "";
 	char inp2[1024] = "";
@@ -41,6 +43,7 @@ int kernel_main() {
 			if (key[1] == '\0') {
 				if (key[0] != '\1') {
 					typed[i] = key[0];
+					totkey++;
 					terminal_printf(key);
 					i++;
                     if (b == 1){
@@ -49,21 +52,24 @@ int kernel_main() {
                 // What
 				}              
                 if (g == 0){
-                    if (strcmp(key, " ") == 0){
+					// THIS IS TERRIBLE!!
+                    if (strcmp(key, ";") == 0) {
 						strcpy(cmd, typed);
-						cmd[i] = '\0';
+						cmd[i + 1] = '\0'; // remove just the funny character						
                         g++;
+						q++;
                         for (int j = 0; j < 1024; j++) {
- 							typed[j] = '\0';
+ 							typed[j] = '\0'; //  wipe typed
 						}
 						i = 0;
-						if (cmd != "echo "){
-							b--;
+						if (cmd != "echo"){
+							b--; // really bad way to get echo working
 						}
+						
                     }
                 }
                 if (b == 0){
-                    if (strcmp(key, " ") == 0){
+                    if (strcmp(key, ";") == 0){ 
 						strcpy(inp1, typed);
 						inp1[i] = '\0';
                         g++;
@@ -79,15 +85,16 @@ int kernel_main() {
 					strcpy(inp2, typed);
 					inp2[i] = '\0';
 					typed[i] = '\0';
-					if (strcmp (cmd, "ver ") == 0) ver();
+					if (strcmp (cmd, "ver;") == 0) ver();
+					else if (strcmp (cmd, "echo;") == 0) echo(inp2);
+					else if (strcmp (cmd, "clear;") == 0) clear();
+					else if (strcmp (cmd, "add;") == 0) add(inp1, inp2);
 					// if (strcmp (cmd, "help ") == 0) ver();
-					// if (strcmp (cmd, "clear ") == 0) terminal_clear_screen();
-					// iterate through every char in cmd and inp1 and set the location of the space character to null before adding more commands
+					// for the backspace else if statememt, change the first if statement variable to one that increments after every key press and wipes after enter is pressed
 					else{
 						terminal_move_cursor(0,cursory + 1);
 						terminal_cprintf("Command not found!\n", 4);
 						terminal_cprintf("[DeltaZero@DeltaOs] # ", 5);
-						terminal_printf(cmd);
 					}
 					for (int j = 0; j < 1024; j++) {
 						typed[j] = '\0';
@@ -98,14 +105,17 @@ int kernel_main() {
 					g = 0;
 					b = 0;
 					i = 0;
+					q = 0;
+					totkey = 0;
 				}
 				else if (strcmp(key, "BACKSPACE") == 0) {
-				if (typed[0] != '\0') {
+				if (totkey != 0) {
 					if (cursorx - 1 > 0) {
 						terminal_move_cursor(cursorx - 1,cursory);
 						video_mem[cursor * 2] = '\0';
 						video_mem[cursor * 2 + 1] = '\0';
 						i--;
+						totkey--;
 						typed[i] = '\0';
 						
 					}
